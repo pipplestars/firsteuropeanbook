@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#34a056">
+<title>O Meu Primeiro Livro de Colorir · Ouvir</title>
+<meta name="description" content="Tap a picture to hear it in European Portuguese. Audio for My First European Portuguese Coloring Book.">
+<style>
+@font-face{font-family:Fredoka;src:url(fonts/Fredoka-Regular.ttf);font-weight:400}
+@font-face{font-family:Fredoka;src:url(fonts/Fredoka-SemiBold.ttf);font-weight:600}
+:root{--green:#34a056;--navy:#1e2a5e;--coral:#e4505b;--bg:#eef7f0;--muted:#5f6670}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Fredoka,system-ui,sans-serif;
+  -webkit-user-select:none;user-select:none;overscroll-behavior:none}
+header{background:var(--green);color:#fff;text-align:center;padding:14px 16px}
+header h1{margin:0;font-size:1.25rem;font-weight:600}
+main{max-width:1200px;margin:0 auto;padding:16px}
+.colors{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin:4px 0 18px}
+.colors button{width:72px;height:72px;border-radius:50%;border:5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.15);cursor:pointer}
+.colors button.on{transform:scale(1.12);border-color:var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.tile{position:relative;border:0;padding:8px;background:#fff;border-radius:18px;box-shadow:0 2px 6px rgba(0,0,0,.1);cursor:pointer}
+.tile img{width:100%;height:auto;display:block;border-radius:10px;pointer-events:none}
+.tile span{position:absolute;top:6px;left:6px;min-width:30px;height:30px;border-radius:15px;background:var(--navy);color:#fff;
+  font-weight:600;font-size:.95rem;line-height:30px;text-align:center;padding:0 6px}
+.tile:active{transform:scale(.97)}
+#big{position:fixed;inset:0;background:rgba(238,247,240,.98);display:none;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:10px}
+#big.open{display:flex}
+#big img{width:min(86vw,52vh);height:auto;background:#fff;border-radius:22px;padding:10px;box-shadow:0 4px 14px rgba(0,0,0,.15);cursor:pointer}
+#big.playing img{outline:6px solid var(--coral)}
+#word{font-size:2.4rem;font-weight:600;margin:4px 0 0;text-align:center}
+#en{color:var(--muted);font-size:1.1rem;margin:0}
+#ptp{font-weight:600;font-size:1.15rem;margin:6px 0 0;text-align:center}
+#enp{color:var(--muted);margin:0;text-align:center}
+.nav{display:flex;gap:18px;margin-top:8px}
+.nav button{width:76px;height:76px;border-radius:50%;border:0;background:var(--navy);color:#fff;font-size:2rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.nav button.play{background:var(--coral);width:92px;height:92px;font-size:2.4rem}
+#close{position:absolute;top:14px;right:14px;width:56px;height:56px;border-radius:50%;border:0;background:#fff;color:var(--navy);font-size:1.6rem;box-shadow:0 2px 6px rgba(0,0,0,.2);cursor:pointer}
+#soon{display:none;color:var(--coral);font-weight:600}
+footer{text-align:center;color:var(--muted);font-size:.9rem;padding:26px 16px 40px;-webkit-user-select:text;user-select:text}
+footer a{color:var(--navy);font-weight:600}
+</style>
+</head>
+<body>
+<header><h1>O Meu Primeiro Livro de Colorir</h1></header>
+<main>
+<div class="colors" id="colors" aria-label="As cores"></div>
+<div class="grid" id="grid"></div>
+</main>
+<footer>
+Toca na imagem que estás a pintar. · Tap the picture you are coloring.<br><br>
+<a href="album/pipplestars-pt-audio.zip" download>Download all audio (MP3) for Yoto or Toniebox</a><br><br>
+Pipplestars · My First European Portuguese Coloring Book · © 2026 José Costa
+</footer>
+<div id="big" role="dialog" aria-modal="true">
+  <button id="close" aria-label="Fechar">✕</button>
+  <img id="bigimg" alt="">
+  <p id="word"></p><p id="en"></p><p id="ptp"></p><p id="enp"></p>
+  <p id="soon">em breve · coming soon</p>
+  <div class="nav">
+    <button id="prev" aria-label="Anterior">◀</button>
+    <button id="play" class="play" aria-label="Ouvir">🔊</button>
+    <button id="next" aria-label="Seguinte">▶</button>
+  </div>
+</div>
+<script>
+const D={"colors": [{"pt": "vermelho", "en": "red", "rgb": [228, 57, 53]}, {"pt": "laranja", "en": "orange", "rgb": [251, 140, 0]}, {"pt": "amarelo", "en": "yellow", "rgb": [253, 216, 53]}, {"pt": "verde", "en": "green", "rgb": [67, 160, 71]}, {"pt": "azul", "en": "blue", "rgb": [30, 136, 229]}, {"pt": "roxo", "en": "purple", "rgb": [142, 36, 170]}], "pics": [{"n": 1, "pt": "os cubos", "en": "the blocks", "ptp": "O elefante e o coelho brincam com os cubos.", "enp": "The elephant and the bunny play with the blocks."}, {"n": 2, "pt": "um puzzle", "en": "a puzzle", "ptp": "O coelho e o urso fazem um puzzle.", "enp": "The bunny and the bear do a puzzle."}, {"n": 3, "pt": "o comboio", "en": "the train", "ptp": "O urso e o coelho brincam com o comboio.", "enp": "The bear and the bunny play with the train."}, {"n": 4, "pt": "um arco-íris", "en": "a rainbow", "ptp": "Vamos desenhar um arco-íris!", "enp": "Let's draw a rainbow!"}, {"n": 5, "pt": "as bolachas", "en": "the cookies", "ptp": "O leão e a girafa fazem bolachas.", "enp": "The lion and the giraffe make cookies."}, {"n": 6, "pt": "a massa", "en": "the dough", "ptp": "O gato estende a massa.", "enp": "The cat rolls out the dough."}, {"n": 7, "pt": "chá", "en": "tea", "ptp": "A raposa e o urso bebem chá.", "enp": "The fox and the bear drink tea."}, {"n": 8, "pt": "panquecas", "en": "pancakes", "ptp": "O urso faz panquecas.", "enp": "The bear makes pancakes."}, {"n": 9, "pt": "a fruta", "en": "the fruit", "ptp": "O elefante e o gato fazem salada de fruta.", "enp": "The elephant and the cat make fruit salad."}, {"n": 10, "pt": "o gelado", "en": "the ice cream", "ptp": "O leão e o coelho comem gelado.", "enp": "The lion and the bunny eat ice cream."}, {"n": 11, "pt": "as maçãs", "en": "the apples", "ptp": "A raposa e o urso lavam as maçãs.", "enp": "The fox and the bear wash the apples."}, {"n": 12, "pt": "as sandes", "en": "the sandwiches", "ptp": "O gato e o cão fazem sandes.", "enp": "The cat and the dog make sandwiches."}, {"n": 13, "pt": "a sopa", "en": "the soup", "ptp": "O elefante mexe a sopa.", "enp": "The elephant stirs the soup."}, {"n": 14, "pt": "o bolo", "en": "the cake", "ptp": "O leão e o dinossauro decoram o bolo.", "enp": "The lion and the dinosaur decorate the cake."}, {"n": 15, "pt": "a horta", "en": "the vegetable garden", "ptp": "O coelho e o urso plantam a horta.", "enp": "The bunny and the bear plant the vegetable garden."}, {"n": 16, "pt": "as flores", "en": "the flowers", "ptp": "O elefante rega as flores.", "enp": "The elephant waters the flowers."}, {"n": 17, "pt": "uma cenoura", "en": "a carrot", "ptp": "O coelho arranca uma cenoura.", "enp": "The bunny pulls up a carrot."}, {"n": 18, "pt": "os morangos", "en": "the strawberries", "ptp": "O leão tem um cesto de morangos.", "enp": "The lion has a basket of strawberries."}, {"n": 19, "pt": "a árvore", "en": "the tree", "ptp": "A raposa planta uma árvore.", "enp": "The fox plants a tree."}, {"n": 20, "pt": "o pássaro", "en": "the bird", "ptp": "O elefante dá sementes ao pássaro.", "enp": "The elephant gives seeds to the bird."}, {"n": 21, "pt": "as folhas", "en": "the leaves", "ptp": "O cão junta as folhas.", "enp": "The dog rakes up the leaves."}, {"n": 22, "pt": "o baloiço", "en": "the swing", "ptp": "O gato anda de baloiço.", "enp": "The cat is on the swing."}, {"n": 23, "pt": "o escorrega", "en": "the slide", "ptp": "A raposa desce pelo escorrega.", "enp": "The fox goes down the slide."}, {"n": 24, "pt": "a bola", "en": "the ball", "ptp": "O leão e a girafa brincam com a bola.", "enp": "The lion and the giraffe play with the ball."}, {"n": 25, "pt": "o papagaio", "en": "the kite", "ptp": "O coelho faz voar o papagaio.", "enp": "The bunny flies the kite."}, {"n": 26, "pt": "os patos", "en": "the ducks", "ptp": "O urso e o gato veem os patos.", "enp": "The bear and the cat watch the ducks."}, {"n": 27, "pt": "o piquenique", "en": "the picnic", "ptp": "O cão e a raposa fazem um piquenique.", "enp": "The dog and the fox have a picnic."}, {"n": 28, "pt": "a ponte", "en": "the bridge", "ptp": "O coelho e o gato atravessam a ponte.", "enp": "The bunny and the cat cross the bridge."}, {"n": 29, "pt": "a borboleta", "en": "the butterfly", "ptp": "Olha, uma borboleta!", "enp": "Look, a butterfly!"}, {"n": 30, "pt": "o rio", "en": "the river", "ptp": "Os barquinhos flutuam no rio.", "enp": "The little boats float on the river."}, {"n": 31, "pt": "o chapéu de chuva", "en": "the umbrella", "ptp": "O elefante e o coelho usam um chapéu de chuva para não se molharem.", "enp": "The elephant and the bunny use an umbrella to stay dry."}, {"n": 32, "pt": "o autocarro", "en": "the bus", "ptp": "O coelho conduz o autocarro.", "enp": "The bunny drives the bus."}, {"n": 33, "pt": "as abóboras", "en": "the pumpkins", "ptp": "Que abóboras tão grandes!", "enp": "What big pumpkins!"}, {"n": 34, "pt": "o balão", "en": "the balloon", "ptp": "O elefante e o coelho andam de balão.", "enp": "The elephant and the bunny ride in a balloon."}, {"n": 35, "pt": "a tenda", "en": "the tent", "ptp": "O urso monta a tenda.", "enp": "The bear puts up the tent."}, {"n": 36, "pt": "o balde", "en": "the bucket", "ptp": "O coelho enche o balde de areia.", "enp": "The bunny fills the bucket with sand."}, {"n": 37, "pt": "a praia", "en": "the beach", "ptp": "O elefante e o urso brincam na praia.", "enp": "The elephant and the bear play on the beach."}, {"n": 38, "pt": "o barco", "en": "the boat", "ptp": "A raposa e o gato andam de barco.", "enp": "The fox and the cat go out in a boat."}, {"n": 39, "pt": "as conchas", "en": "the shells", "ptp": "O coelho e o leão apanham conchas.", "enp": "The bunny and the lion collect shells."}, {"n": 40, "pt": "a tartaruga", "en": "the turtle", "ptp": "A tartaruga nada no mar.", "enp": "The turtle swims in the sea."}, {"n": 41, "pt": "o ovo", "en": "the egg", "ptp": "Um dinossauro bebé sai do ovo!", "enp": "A baby dinosaur hatches from the egg!"}, {"n": 42, "pt": "o castelo de areia", "en": "the sandcastle", "ptp": "O dinossauro faz um castelo de areia.", "enp": "The dinosaur builds a sandcastle."}, {"n": 43, "pt": "o tambor", "en": "the drum", "ptp": "Os dinossauros tocam no tambor.", "enp": "The dinosaurs play the drum."}, {"n": 44, "pt": "o girassol", "en": "the sunflower", "ptp": "O dinossauro planta um girassol.", "enp": "The dinosaur plants a sunflower."}, {"n": 45, "pt": "o boneco de neve", "en": "the snowman", "ptp": "O dinossauro faz um boneco de neve.", "enp": "The dinosaur builds a snowman."}, {"n": 46, "pt": "o livro", "en": "the book", "ptp": "O urso e o coelho leem um livro.", "enp": "The bear and the bunny read a book."}, {"n": 47, "pt": "o banho", "en": "the bath", "ptp": "O elefante toma banho.", "enp": "The elephant has a bath."}, {"n": 48, "pt": "a prenda", "en": "the present", "ptp": "O gato traz uma prenda.", "enp": "The cat brings a present."}, {"n": 49, "pt": "as estrelas", "en": "the stars", "ptp": "O coelho e o urso olham para as estrelas.", "enp": "The bunny and the bear look at the stars."}, {"n": 50, "pt": "boa noite", "en": "good night", "ptp": "Boa noite, amigos!", "enp": "Good night, friends!"}]};
+const pad=n=>String(n).padStart(2,'0');
+const audio=new Audio(); let queue=[], cur=0, colorBtn=null;
+const big=document.getElementById('big');
+function playList(list){
+  queue=list.slice(); audio.pause(); next();
+}
+function next(){
+  if(!queue.length){big.classList.remove('playing'); if(colorBtn){colorBtn.classList.remove('on');colorBtn=null;} return;}
+  audio.src=queue.shift(); big.classList.add('playing');
+  audio.play().catch(()=>{queue=[];big.classList.remove('playing');});
+}
+audio.addEventListener('ended',()=>setTimeout(next,450));
+audio.addEventListener('error',()=>{queue=[];big.classList.remove('playing');
+  if(big.classList.contains('open'))document.getElementById('soon').style.display='block';
+  if(colorBtn){colorBtn.classList.remove('on');colorBtn=null;}});
+function show(n){
+  cur=n; const p=D.pics[n-1];
+  document.getElementById('bigimg').src='img/'+pad(n)+'.png';
+  for(const k of ['word','en','ptp','enp']) document.getElementById(k).textContent=p[k==='word'?'pt':k];
+  document.getElementById('soon').style.display='none';
+  big.classList.add('open'); history.replaceState(null,'','#'+n);
+  playList(['audio/'+pad(n)+'.mp3']);
+}
+function hide(){big.classList.remove('open');audio.pause();queue=[];big.classList.remove('playing');history.replaceState(null,'',location.pathname);}
+const g=document.getElementById('grid');
+D.pics.forEach(p=>{const b=document.createElement('button');b.className='tile';b.setAttribute('aria-label',p.pt);
+  b.innerHTML='<span>'+p.n+'</span><img src="img/'+pad(p.n)+'.png" alt="" loading="lazy">';
+  b.onclick=()=>show(p.n); g.appendChild(b);});
+const c=document.getElementById('colors');
+D.colors.forEach((col,i)=>{const b=document.createElement('button');b.style.background='rgb('+col.rgb.join(',')+')';
+  b.setAttribute('aria-label',col.pt);b.onclick=()=>{if(colorBtn)colorBtn.classList.remove('on');colorBtn=b;b.classList.add('on');playList(['audio/c'+(i+1)+'.mp3']);};c.appendChild(b);});
+document.getElementById('close').onclick=hide;
+document.getElementById('bigimg').onclick=()=>show(cur);
+document.getElementById('play').onclick=()=>show(cur);
+document.getElementById('prev').onclick=()=>show(cur>1?cur-1:D.pics.length);
+document.getElementById('next').onclick=()=>show(cur<D.pics.length?cur+1:1);
+const h=parseInt(location.hash.slice(1),10);
+if(h>=1&&h<=D.pics.length){ // opened from a link: show the picture, sound starts on first tap
+  cur=h; const p=D.pics[h-1]; document.getElementById('bigimg').src='img/'+pad(h)+'.png';
+  for(const k of ['word','en','ptp','enp']) document.getElementById(k).textContent=p[k==='word'?'pt':k];
+  big.classList.add('open');
+}
+</script>
+</body>
+</html>
